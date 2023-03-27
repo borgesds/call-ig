@@ -1,11 +1,22 @@
 /* import { api } from '../../lib/axios' */
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { Container, Header } from '../styles'
-import { ConnectBox, ConnectItem } from './styles'
+import { AuthError, ConnectBox, ConnectItem } from './styles'
 
 export default function Register() {
+  const session = useSession()
+
+  const router = useRouter()
+
+  // Verification router error
+  const hasAuthError = !!router.query.error
+
+  // Authentication?
+  const isSingnedIn = session.status === 'authenticated'
+
   /* async function handleRegister() {
   } */
   return (
@@ -32,6 +43,14 @@ export default function Register() {
             <ArrowRight />
           </Button>
         </ConnectItem>
+
+        {/* User no permission */}
+        {hasAuthError && (
+          <AuthError size="sm">
+            Falha ao se conectar ao Google, verifique se você habilitou as
+            permissões de acesso ao Google Calendar.
+          </AuthError>
+        )}
 
         <Button type="submit">
           Próximo passo
