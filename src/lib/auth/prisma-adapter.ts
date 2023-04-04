@@ -1,7 +1,11 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import { Adapter } from 'next-auth/adapters'
 import { prisma } from '../prisma'
 
-export function PrismaAdapter(): Adapter {
+export function PrismaAdapter(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): Adapter {
   return {
     async createUser(user) {},
 
@@ -115,10 +119,49 @@ export function PrismaAdapter(): Adapter {
       }
     },
 
-    async getSessionAndUser(sessionToken) {},
-    async updateSession({ sessionToken }) {},
-    async deleteSession(sessionToken) {},
-    async createVerificationToken({ identifier, expires, token }) {},
-    async useVerificationToken({ identifier, token }) {},
+    async getSessionAndUser(sessionToken) {
+      const { user, ...session } = await prisma.session.findUniqueOrThrow({
+        where: {
+          session_token: sessionToken,
+        },
+        include: {
+          user: true,
+        },
+      })
+
+      return {
+        session: {
+          userId: session.user_id,
+          expires: session.expires,
+          sessionToken: session.session_token,
+        },
+        user: {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: user.email!,
+          emailVerified: null,
+          avatar_url: user.avatar_url!,
+        },
+      }
+    },
+
+    async updateSession({ sessionToken, userId, expires }) {
+      const prismaSession = await prisma.session.update({
+        where: {
+          session_token: sessionToken,
+        },
+        data: {
+          expires,
+          user_id: userId,
+        },
+      })
+
+      return {
+        sessionToken: prismaSession.session_token,
+        userId: prismaSession.user_id,
+        expires: prismaSession.expires,
+      }
+    },
   }
 }
