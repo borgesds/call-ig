@@ -60,7 +60,10 @@ const timeIntervalsFormSchema = z.object({
     ),
 })
 
-type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
+// Represents input data pure
+type TimeIntervalsFormaInput = z.input<typeof timeIntervalsFormSchema>
+// Represents input output
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
   const {
@@ -69,7 +72,7 @@ export default function TimeIntervals() {
     watch,
     formState: { isSubmitting, errors },
     control,
-  } = useForm({
+  } = useForm<TimeIntervalsFormaInput>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -96,8 +99,11 @@ export default function TimeIntervals() {
   const intervals = watch('intervals')
 
   // Submit time interval
-  async function handleSetTimeIntervals(data: TimeIntervalsFormData) {
-    console.log(data)
+  async function handleSetTimeIntervals(data: any) {
+    // Forced repair in TimeIntervalsFormOutput
+    const formData = data as TimeIntervalsFormOutput
+
+    console.log(formData)
   }
 
   return (
