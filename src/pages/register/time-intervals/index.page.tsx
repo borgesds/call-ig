@@ -36,14 +36,14 @@ const timeIntervalsFormSchema = z.object({
     .length(7)
     .transform((intervals) => intervals.filter((interval) => interval.enabled))
     .refine((intervals) => intervals.length > 0, {
-      message: 'Você precisa selecionar pelo menos um dia da semana!',
+      message: 'Você precisa selecionar pelo menos um dia da semana',
     })
     .transform((intervals) => {
       return intervals.map((interval) => {
         return {
           weekDay: interval.weekDay,
-          startTimeMinutes: convertTimeStringToMinutes(interval.startTime),
-          endTimeMinutes: convertTimeStringToMinutes(interval.endTime),
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
         }
       })
     })
@@ -51,7 +51,7 @@ const timeIntervalsFormSchema = z.object({
       (intervals) => {
         return intervals.every(
           (interval) =>
-            interval.endTimeMinutes - 60 >= interval.startTimeMinutes,
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes,
         )
       },
       {
