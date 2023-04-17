@@ -22,6 +22,7 @@ export default async function handler(
     return res.status(405).end()
   }
 
+  // Load user session
   const session = await getServerSession(
     req,
     res,
