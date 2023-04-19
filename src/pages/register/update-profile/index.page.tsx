@@ -1,5 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Heading, MultiStep, Text, TextArea } from '@ignite-ui/react'
+import {
+  Avatar,
+  Button,
+  Heading,
+  MultiStep,
+  Text,
+  TextArea,
+} from '@ignite-ui/react'
 import { ArrowRight } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -9,6 +16,8 @@ import { useSession } from 'next-auth/react'
 import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import { buildNextAuthOption } from '../../api/auth/[...nextauth].api'
+import { api } from '@/src/lib/axios'
+import { useRouter } from 'next/router'
 
 const updateProfileSchema = z.object({
   bio: z.string(),
@@ -28,7 +37,18 @@ export default function UpdateProfile() {
   // Get all the information of the logged in user
   const session = useSession()
 
-  async function handleUpdateProfile(data: UpdateProfileData) {}
+  // routes
+  const router = useRouter()
+
+  // Update profile bio
+  async function handleUpdateProfile(data: UpdateProfileData) {
+    await api.put('/users/profile', {
+      bio: data.bio,
+    })
+
+    // routes
+    await router.push(`/schedule/${session.data?.user.username}`)
+  }
   return (
     <Container>
       <Header>
@@ -44,10 +64,14 @@ export default function UpdateProfile() {
       <ProfileBox as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
         <label>
           <Text size="sm">Foto de perfil</Text>
+          <Avatar
+            src={session.data?.user.avatar_url}
+            alt={session.data?.user.name}
+          />
         </label>
 
         <label>
-          <Text size="sm">Sobre voçê</Text>
+          <Text size="sm">Sobre você</Text>
           <TextArea {...register('bio')} />
           <FormAnnotation size="sm">
             Fale um pouco sobre você. Isto será exibido em sua página pessoal.
