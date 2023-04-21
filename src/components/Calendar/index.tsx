@@ -6,6 +6,7 @@ import {
   CalendarDay,
   CalendarHeader,
   CalendarTitle,
+  Division,
 } from './styles'
 import { getWeekDays } from '@/src/utils/get-week-days'
 
@@ -38,6 +39,8 @@ export function Calendar() {
             ))}
           </tr>
         </thead>
+
+        <Division>.....</Division>
 
         <tbody>
           <td></td>

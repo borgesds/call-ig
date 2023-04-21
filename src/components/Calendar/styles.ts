@@ -59,16 +59,22 @@ export const CalendarBody = styled('table', {
     fontSize: '$sm',
   },
 
-  'tbody:before': {
+  /* 'tbody:before': {
     content: '.',
     lineHeight: '0.75rem',
     display: 'block',
     color: '$gray800',
   },
-
+ */
   'tbody td': {
     boxSizing: 'border-box',
   },
+})
+
+export const Division = styled('div', {
+  lineHeight: '0.75rem',
+  display: 'block',
+  color: '$gray800',
 })
 
 export const CalendarDay = styled('button', {
