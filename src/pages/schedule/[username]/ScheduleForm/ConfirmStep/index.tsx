@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
+import { api } from '@/src/lib/axios'
 
 const confirmFormSchema = z.object({
   name: z.string().min(3, { message: 'O nome precisa no mínimo 3 caracteres' }),
@@ -31,8 +32,18 @@ export function ConfirmStep({
     resolver: zodResolver(confirmFormSchema),
   })
 
-  function handleConfirmScheduling(data: ConfirmFormData) {
-    console.log(data)
+  const router = userRouter()
+  const username = String(router.query.username)
+
+  async function handleConfirmScheduling(data: ConfirmFormData) {
+    const { name, email, observations } = data
+
+    await api.post(`/users/${username}/scheduling`, {
+      name,
+      email,
+      observations,
+      date: schedulingDate,
+    })
   }
 
   const describedDate = dayjs(schedulingDate).format('DD[ de ]YYYY')
@@ -88,3 +99,7 @@ export function ConfirmStep({
     </ConfirmForm>
   )
 }
+function userRouter() {
+  throw new Error('Function not implemented.')
+}
+

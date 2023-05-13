@@ -1,4 +1,5 @@
 import { prisma } from '@/src/lib/prisma'
+import dayjs from 'dayjs'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -12,6 +13,16 @@ export default async function handle(
 
   const username = String(req.query.username)
 
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  })
+
+  if (!user) {
+    return res.status(400).json({ message: 'User does not exist.' })
+  }
+
   const createSchedulingBody = z.object({
     name: z.string(),
     email: z.string().email(),
@@ -23,15 +34,36 @@ export default async function handle(
     req.body,
   )
 
-  const user = await prisma.user.findUnique({
+  const schedulingDate = dayjs(date).startOf('hour')
+
+  if (schedulingDate.isBefore(new Date())) {
+    return res.status(400).json({
+      massage: 'Date is in the past',
+    })
+  }
+
+  const conflictingScheduling = await prisma.scheduling.findFirst({
     where: {
-      username,
+      user_id: user.id,
+      date: schedulingDate.toDate(),
     },
   })
 
-  if (!user) {
-    return res.status(400).json({ message: 'User does not exist.' })
+  if (conflictingScheduling) {
+    return res.status(400).json({
+      massage: 'There is another scheduled at the same time',
+    })
   }
 
-  return res.json({})
+  await prisma.scheduling.create({
+    data: {
+      name,
+      email,
+      observations,
+      date: schedulingDate.toDate(),
+      user_id: user.id,
+    },
+  })
+
+  return res.status(201).end()
 }
