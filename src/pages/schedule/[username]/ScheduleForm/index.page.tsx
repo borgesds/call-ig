@@ -18,5 +18,5 @@ export function ScheduleForm() {
     )
   }
 
-  return <CalendarStep onSelectedDateTime={setSelectedDateTime} />
+  return <CalendarStep onSelectDateTime={setSelectedDateTime} />
 }
