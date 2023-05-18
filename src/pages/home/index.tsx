@@ -7,6 +7,7 @@ import { ClaimUsernameForm } from './components/ClaimUsernameForm'
 import { NextSeo } from 'next-seo'
 
 export default function Home() {
+  // Home
   return (
     <>
       <NextSeo
