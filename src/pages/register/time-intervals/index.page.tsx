@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
   Checkbox,
@@ -6,24 +7,24 @@ import {
   Text,
   TextInput,
 } from '@ignite-ui/react'
-import { Container, Header } from '../styles'
-import {
-  FormError,
-  IntervalBox,
-  IntervalDay,
-  IntervalInputs,
-  IntervalItem,
-  IntervalsContainer,
-} from './styles'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { getWeekDays } from '@/src/utils/get-week-days'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { convertTimeStringToMinutes } from '@/src/utils/conver-time-string-to-minutes'
-import { api } from '@/src/lib/axios'
-import { useRouter } from 'next/router'
-import { NextSeo } from 'next-seo'
+import { api } from '../../../lib/axios'
+import { convertTimeStringToMinutes } from '../../../utils/convert-time-string-to-minutes'
+import { getWeekDays } from '../../../utils/get-week-days'
+import { Container, Header } from '../styles'
+
+import {
+  FormError,
+  IntervalBox,
+  IntervalContainer,
+  IntervalDay,
+  IntervalInputs,
+  IntervalItem,
+} from './styles'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -63,19 +64,17 @@ const timeIntervalsFormSchema = z.object({
     ),
 })
 
-// Represents input data pure
-type TimeIntervalsFormaInput = z.input<typeof timeIntervalsFormSchema>
-// Represents input output
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema>
 type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
   const {
     register,
     handleSubmit,
+    control,
     watch,
     formState: { isSubmitting, errors },
-    control,
-  } = useForm<TimeIntervalsFormaInput>({
+  } = useForm<TimeIntervalsFormInput>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -90,10 +89,8 @@ export default function TimeIntervals() {
     },
   })
 
-  // Routes
   const router = useRouter()
 
-  // Function name week days
   const weekDays = getWeekDays()
 
   const { fields } = useFieldArray({
@@ -101,19 +98,15 @@ export default function TimeIntervals() {
     name: 'intervals',
   })
 
-  // Observations changes in checkboxes
   const intervals = watch('intervals')
 
-  // Submit time interval
   async function handleSetTimeIntervals(data: any) {
-    // Forced repair in TimeIntervalsFormOutput
     const { intervals } = data as TimeIntervalsFormOutput
 
     await api.post('/users/time-intervals', {
       intervals,
     })
 
-    // Router
     await router.push('/register/update-profile')
   }
 
@@ -125,7 +118,7 @@ export default function TimeIntervals() {
         <Header>
           <Heading as="strong">Quase lá</Heading>
           <Text>
-            Defina o intervalo de horários que você está disponível em cada dia
+            Defina o intervalo de horário que você está disponível em cada dia
             da semana.
           </Text>
 
@@ -133,10 +126,10 @@ export default function TimeIntervals() {
         </Header>
 
         <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
-          <IntervalsContainer>
-            {fields.map((fields, index) => {
+          <IntervalContainer>
+            {fields.map((field, index) => {
               return (
-                <IntervalItem key={fields.id}>
+                <IntervalItem key={field.id}>
                   <IntervalDay>
                     <Controller
                       name={`intervals.${index}.enabled`}
@@ -144,15 +137,15 @@ export default function TimeIntervals() {
                       render={({ field }) => {
                         return (
                           <Checkbox
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked) =>
                               field.onChange(checked === true)
-                            }}
+                            }
                             checked={field.value}
                           />
                         )
                       }}
                     />
-                    <Text>{weekDays[fields.weekDay]}</Text>
+                    <Text>{weekDays[field.weekDay]}</Text>
                   </IntervalDay>
                   <IntervalInputs>
                     <TextInput
@@ -173,7 +166,7 @@ export default function TimeIntervals() {
                 </IntervalItem>
               )
             })}
-          </IntervalsContainer>
+          </IntervalContainer>
 
           {errors.intervals && (
             <FormError size="sm">{errors.intervals.message}</FormError>

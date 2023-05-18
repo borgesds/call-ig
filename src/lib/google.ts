@@ -1,6 +1,6 @@
+import dayjs from 'dayjs'
 import { google } from 'googleapis'
 import { prisma } from './prisma'
-import dayjs from 'dayjs'
 
 export async function getGoogleOAuthToken(userId: string) {
   const account = await prisma.account.findFirstOrThrow({
@@ -18,9 +18,7 @@ export async function getGoogleOAuthToken(userId: string) {
   auth.setCredentials({
     access_token: account.access_token,
     refresh_token: account.refresh_token,
-    expiry_date: account.expires_at
-      ? Math.floor(account.expires_at / 1000)
-      : null,
+    expiry_date: account.expires_at ? account.expires_at * 1000 : null,
   })
 
   if (!account.expires_at) {

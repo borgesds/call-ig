@@ -1,26 +1,27 @@
-import { api } from '../../lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
+import { AxiosError } from 'axios'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { api } from '../../lib/axios'
+
 import { Container, Form, FormError, Header } from './styles'
-import { AxiosError } from 'axios'
-import { NextSeo } from 'next-seo'
 
 const registerFormSchema = z.object({
   username: z
     .string()
-    .min(3, { message: 'O usuário deve ter pelo menos 3 caracteres.' })
+    .min(3, { message: 'O usuário precisa ter pelo menos 3 letras.' })
     .regex(/^([a-z\\-]+)$/i, {
-      message: 'O usuário deve ter apenas letras ou hifens',
+      message: 'O usuário pode ter apenas letras e hifens.',
     })
     .transform((username) => username.toLowerCase()),
   name: z
     .string()
-    .min(3, { message: 'O nome deve ter pelo menos 3 caracteres.' }),
+    .min(3, { message: 'O nome precisa ter pelo menos 3 letras.' }),
 })
 
 type RegisterFormData = z.infer<typeof registerFormSchema>
@@ -35,7 +36,6 @@ export default function Register() {
     resolver: zodResolver(registerFormSchema),
   })
 
-  // Created a router
   const router = useRouter()
 
   useEffect(() => {
@@ -51,7 +51,6 @@ export default function Register() {
         username: data.username,
       })
 
-      // Redirect route connect-calendar
       await router.push('/register/connect-calendar')
     } catch (err) {
       if (err instanceof AxiosError && err?.response?.data?.message) {
@@ -62,6 +61,7 @@ export default function Register() {
       console.error(err)
     }
   }
+
   return (
     <>
       <NextSeo title="Crie uma conta | Ignite Call" />
@@ -82,7 +82,7 @@ export default function Register() {
             <Text size="sm">Nome de usuário</Text>
             <TextInput
               prefix="ignite.com/"
-              placeholder="seu-usuario"
+              placeholder="seu-usuário"
               {...register('username')}
             />
 

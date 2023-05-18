@@ -5,8 +5,9 @@ export const Form = styled(Box, {
   gridTemplateColumns: '1fr auto',
   gap: '$2',
   marginTop: '$4',
+  padding: '$4',
 
-  '@media (max-width: 600px)': {
+  '@media(max-width: 600px)': {
     gridTemplateColumns: '1fr',
   },
 })

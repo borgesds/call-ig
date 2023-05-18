@@ -1,15 +1,16 @@
-import { Button, Text, TextArea, TextInput } from '@ignite-ui/react'
-import { ConfirmForm, FormActions, FormError, FormHeader } from './styles'
-import { CalendarBlank, Clock } from 'phosphor-react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, Text, TextArea, TextInput } from '@ignite-ui/react'
 import dayjs from 'dayjs'
-import { api } from '@/src/lib/axios'
+import { useRouter } from 'next/router'
+import { CalendarBlank, Clock } from 'phosphor-react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { api } from '../../../../../lib/axios'
+import { ConfirmForm, FormActions, FormError, FormHeader } from './styles'
 
 const confirmFormSchema = z.object({
   name: z.string().min(3, { message: 'O nome precisa no mínimo 3 caracteres' }),
-  email: z.string().email({ message: 'Digite ume-mail válido' }),
+  email: z.string().email({ message: 'Digite um e-mail válido' }),
   observations: z.string().nullable(),
 })
 
@@ -32,13 +33,13 @@ export function ConfirmStep({
     resolver: zodResolver(confirmFormSchema),
   })
 
-  const router = userRouter()
+  const router = useRouter()
   const username = String(router.query.username)
 
   async function handleConfirmScheduling(data: ConfirmFormData) {
     const { name, email, observations } = data
 
-    await api.post(`/users/${username}/scheduling`, {
+    await api.post(`/users/${username}/schedule`, {
       name,
       email,
       observations,
@@ -48,7 +49,7 @@ export function ConfirmStep({
     onCancelConfirmation()
   }
 
-  const describedDate = dayjs(schedulingDate).format('DD[ de ]YYYY')
+  const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
   const describedTime = dayjs(schedulingDate).format('HH:mm[h]')
 
   return (
@@ -58,7 +59,6 @@ export function ConfirmStep({
           <CalendarBlank />
           {describedDate}
         </Text>
-
         <Text>
           <Clock />
           {describedTime}
@@ -66,20 +66,18 @@ export function ConfirmStep({
       </FormHeader>
 
       <label>
-        <Text size="sm">Nome Completo</Text>
-        <TextInput type="text" placeholder="Seu nome" {...register('name')} />
-
+        <Text size="sm">Nome completo</Text>
+        <TextInput placeholder="Seu nome" {...register('name')} />
         {errors.name && <FormError size="sm">{errors.name.message}</FormError>}
       </label>
 
       <label>
-        <Text size="sm">Endreço de e-mail</Text>
+        <Text size="sm">Endereço de e-mail</Text>
         <TextInput
           type="email"
-          placeholder="johndone@example.com"
+          placeholder="johndoe@example.com"
           {...register('email')}
         />
-
         {errors.email && (
           <FormError size="sm">{errors.email.message}</FormError>
         )}
@@ -101,7 +99,3 @@ export function ConfirmStep({
     </ConfirmForm>
   )
 }
-function userRouter() {
-  throw new Error('Function not implemented.')
-}
-

@@ -1,11 +1,11 @@
 import { Avatar, Heading, Text } from '@ignite-ui/react'
-import { Container, UserHeader } from './styles'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { prisma } from '@/src/lib/prisma'
-import { ScheduleForm } from './ScheduleForm/index.page'
 import { NextSeo } from 'next-seo'
+import { prisma } from '../../../lib/prisma'
+import { ScheduleForm } from './ScheduleForm'
+import { Container, UserHeader } from './styles'
 
-interface SheduleProps {
+interface ScheduleProps {
   user: {
     name: string
     bio: string
@@ -13,7 +13,7 @@ interface SheduleProps {
   }
 }
 
-export default function Schedule({ user }: SheduleProps) {
+export default function Schedule({ user }: ScheduleProps) {
   return (
     <>
       <NextSeo title={`Agendar com ${user.name} | Ignite Call`} />
@@ -38,7 +38,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-// Page static
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const username = String(params?.username)
 
@@ -62,7 +61,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         avatarUrl: user.avatar_url,
       },
     },
-
     revalidate: 60 * 60 * 24, // 1 day
   }
 }

@@ -1,10 +1,9 @@
-import { Box, Text, styled } from '@ignite-ui/react'
+import { Box, styled, Text } from '@ignite-ui/react'
 
 export const Container = styled(Box, {
   margin: '$6 auto 0',
   padding: 0,
   display: 'grid',
-  maxWidth: '100%',
   position: 'relative',
 
   variants: {
@@ -29,7 +28,6 @@ export const TimePicker = styled('div', {
   padding: '$6 $6 0',
   overflowY: 'scroll',
 
-  // Hack default maxWidth Calendar, not TimePicker
   position: 'absolute',
   top: 0,
   bottom: 0,
@@ -81,6 +79,6 @@ export const TimePickerItem = styled('button', {
   },
 
   '&:focus': {
-    boxShadow: '0 0 0 2px $colors$ignite500',
+    boxShadow: '0 0 0 2px $colors$gray100',
   },
 })

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
 import { Adapter } from 'next-auth/adapters'
-import { prisma } from '../prisma'
 import { parseCookies, destroyCookie } from 'nookies'
+import { prisma } from '../prisma'
 
 export function PrismaAdapter(
   req: NextApiRequest | NextPageContext['req'],
@@ -12,7 +12,7 @@ export function PrismaAdapter(
       const { '@ignitecall:userId': userIdOnCookies } = parseCookies({ req })
 
       if (!userIdOnCookies) {
-        throw new Error('User Id not found on cookies')
+        throw new Error('User ID not found on cookies.')
       }
 
       const prismaUser = await prisma.user.update({
@@ -108,6 +108,7 @@ export function PrismaAdapter(
         avatar_url: user.avatar_url!,
       }
     },
+
     async updateUser(user) {
       const prismaUser = await prisma.user.update({
         where: {

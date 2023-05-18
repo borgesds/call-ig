@@ -1,11 +1,11 @@
-import { getGoogleOAuthToken } from '@/src/lib/google'
-import { prisma } from '@/src/lib/prisma'
 import dayjs from 'dayjs'
 import { google } from 'googleapis'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
+import { getGoogleOAuthToken } from '../../../../lib/google'
+import { prisma } from '../../../../lib/prisma'
 
-export default async function handle(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -40,7 +40,7 @@ export default async function handle(
 
   if (schedulingDate.isBefore(new Date())) {
     return res.status(400).json({
-      massage: 'Date is in the past',
+      message: 'Date is in the past.',
     })
   }
 
@@ -53,7 +53,7 @@ export default async function handle(
 
   if (conflictingScheduling) {
     return res.status(400).json({
-      massage: 'There is another scheduled at the same time',
+      message: 'There is another scheduling at at the same time.',
     })
   }
 

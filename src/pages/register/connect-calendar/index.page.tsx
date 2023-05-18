@@ -1,31 +1,24 @@
-/* import { api } from '../../lib/axios' */
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
 import { signIn, useSession } from 'next-auth/react'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ArrowRight, Check } from 'phosphor-react'
+// import { api } from "../../../lib/axios"
 import { Container, Header } from '../styles'
 import { AuthError, ConnectBox, ConnectItem } from './styles'
-import { NextSeo } from 'next-seo'
 
 export default function ConnectCalendar() {
   const session = useSession()
-
   const router = useRouter()
 
-  // Verification router error
   const hasAuthError = !!router.query.error
+  const isSignedId = session.status === 'authenticated'
 
-  // Authentication?
-  const isSignedIn = session.status === 'authenticated'
-
-  // Authentication Google Account for calendar
   async function handleConnectCalendar() {
     await signIn('google')
   }
 
-  // Next Step Navigation
   async function handleNavigateToNextStep() {
-    // Router
     await router.push('/register/time-intervals')
   }
 
@@ -46,8 +39,8 @@ export default function ConnectCalendar() {
 
         <ConnectBox>
           <ConnectItem>
-            <Text>Google Caledar</Text>
-            {isSignedIn ? (
+            <Text>Google Calendar</Text>
+            {isSignedId ? (
               <Button size="sm" disabled>
                 Conectado
                 <Check />
@@ -64,18 +57,17 @@ export default function ConnectCalendar() {
             )}
           </ConnectItem>
 
-          {/* User no permission */}
           {hasAuthError && (
             <AuthError size="sm">
               Falha ao se conectar ao Google, verifique se você habilitou as
-              permissões de acesso ao Google Calendar.
+              permissões de acesso ao Google Calendar
             </AuthError>
           )}
 
           <Button
             onClick={handleNavigateToNextStep}
             type="submit"
-            disabled={!isSignedIn}
+            disabled={!isSignedId}
           >
             Próximo passo
             <ArrowRight />

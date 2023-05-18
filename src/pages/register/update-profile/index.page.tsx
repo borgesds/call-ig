@@ -7,18 +7,18 @@ import {
   Text,
   TextArea,
 } from '@ignite-ui/react'
+import { GetServerSideProps } from 'next'
+import { unstable_getServerSession } from 'next-auth'
+import { useSession } from 'next-auth/react'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { api } from '../../../lib/axios'
+import { buildNextAuthOptions } from '../../api/auth/[...nextAuth].api'
 import { Container, Header } from '../styles'
 import { FormAnnotation, ProfileBox } from './styles'
-import { useSession } from 'next-auth/react'
-import { GetServerSideProps } from 'next'
-import { getServerSession } from 'next-auth'
-import { buildNextAuthOption } from '../../api/auth/[...nextauth].api'
-import { api } from '@/src/lib/axios'
-import { useRouter } from 'next/router'
-import { NextSeo } from 'next-seo'
 
 const updateProfileSchema = z.object({
   bio: z.string(),
@@ -35,21 +35,17 @@ export default function UpdateProfile() {
     resolver: zodResolver(updateProfileSchema),
   })
 
-  // Get all the information of the logged in user
   const session = useSession()
-
-  // routes
   const router = useRouter()
 
-  // Update profile bio
   async function handleUpdateProfile(data: UpdateProfileData) {
     await api.put('/users/profile', {
       bio: data.bio,
     })
 
-    // routes
     await router.push(`/schedule/${session.data?.user.username}`)
   }
+
   return (
     <>
       <NextSeo title="Atualize seu perfil | Ignite Call" noindex />
@@ -67,9 +63,10 @@ export default function UpdateProfile() {
 
         <ProfileBox as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
           <label>
-            <Text size="sm">Foto de perfil</Text>
+            <Text>Foto de perfil</Text>
             <Avatar
               src={session.data?.user.avatar_url}
+              referrerPolicy="no-referrer"
               alt={session.data?.user.name}
             />
           </label>
@@ -93,11 +90,10 @@ export default function UpdateProfile() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  // Load user session
-  const session = await getServerSession(
+  const session = await unstable_getServerSession(
     req,
     res,
-    buildNextAuthOption(req, res),
+    buildNextAuthOptions(req, res),
   )
 
   return {
